@@ -6,6 +6,7 @@ const topNavBtn = document.querySelector('.top-nav-btn');
 const profileIcon = document.querySelector('.profile-icon'); // Top Nav Profile Icon
 const sidebarProfileIcon = document.getElementById('sidebar-profile-icon'); // Sidebar Profile Icon
 const loginModal = document.getElementById('login-modal');
+const registerModal = document.getElementById('register-modal');
 
 // Open the sidebar and move top-nav items inside the sidebar
 sideNavToggle.addEventListener('click', function() {
@@ -20,6 +21,7 @@ function moveTopNavItemsToSidebar() {
         // Move top-nav buttons
         const topNavClone = topNavBtn.cloneNode(true);
         sideNav.appendChild(topNavClone);
+        topNavBtn.remove(); // Remove original from top nav
     }
 
     // Check if the profile icon is already moved
@@ -28,12 +30,15 @@ function moveTopNavItemsToSidebar() {
         const profileClone = profileIcon.cloneNode(true);
         profileClone.id = 'sidebar-profile-icon'; // Set the id to maintain consistency
         sideNav.appendChild(profileClone);
+        profileIcon.remove(); // Remove original from top nav
     }
 }
 
-// Overlay click event to close the sidebar
+// Overlay click event to close the sidebar and modals
 overlay.addEventListener('click', function() {
     closeSidebar();
+    loginModal.style.display = "none"; // Close login modal
+    registerModal.style.display = "none"; // Close registration modal
 });
 
 // Function to open the sidebar
@@ -50,36 +55,75 @@ function closeSidebar() {
 
 // Profile icon click event to open login modal for top nav
 profileIcon.addEventListener('click', function() {
-    openLoginModal();
+    showLoginModal(); // Call the function to show login modal
 });
 
 // Profile icon click event to open login modal for sidebar
-sidebarProfileIcon.addEventListener('click', function() {
-    openLoginModal();
-});
-
-// Function to open the login modal
-function openLoginModal() {
-    loginModal.style.display = "block"; // Show modal
+if (sidebarProfileIcon) {
+    sidebarProfileIcon.addEventListener('click', function() {
+        showLoginModal(); // Call the function to show login modal
+    });
 }
 
-// Close the modal when clicking outside of it
-window.addEventListener('click', function(event) {
-    if (event.target === loginModal || event.target === overlay) {
-        loginModal.style.display = "none"; // Close modal when clicking on overlay or modal itself
+// Function to open the login modal and close the sidebar
+function showLoginModal() {
+    // Close the sidebar if it's open
+    if (sideNav.style.width === '250px') { // Adjust width as per your sidebar's open width
+        closeSidebar(); // Close the sidebar
     }
-});
-// Toggle the visibility of the long description when "Show More" button is clicked
-function toggleDetails(button) {
-    const card = button.parentElement;
-    const longDescription = card.querySelector('.long-description');
     
-    if (longDescription.style.display === 'block') {
-        longDescription.style.display = 'none';
-        button.textContent = 'Show More';
-    } else {
-        longDescription.style.display = 'block';
-        button.textContent = 'Show Less';
+    // Show the login modal
+    loginModal.style.display = 'block';
+}
+
+// Function to open the register modal
+function showRegisterModal() {
+    loginModal.style.display = 'none'; // Hide login modal
+    registerModal.style.display = 'block'; // Show registration modal
+}
+
+// Close modals when clicking on them
+window.addEventListener('click', function(event) {
+    if (event.target === loginModal) {
+        loginModal.style.display = "none"; // Close login modal
+    }
+    if (event.target === registerModal) {
+        registerModal.style.display = "none"; // Close registration modal
+    }
+});
+
+// Chat box functionality
+const chatButton = document.getElementById('chat-button');
+const chatBox = document.getElementById('chat-box');
+const closeChatButton = document.getElementById('close-chat');
+let isChatOpen = false;
+
+// Toggle chat box when chat button is clicked
+chatButton.addEventListener('click', () => {
+    chatBox.style.bottom = isChatOpen ? '-400px' : '20px'; // Show/hide chat box
+    isChatOpen = !isChatOpen; // Toggle state
+});
+
+// Close chat box when close button is clicked
+closeChatButton.addEventListener('click', () => {
+    chatBox.style.bottom = '-400px'; // Hide chat box
+    isChatOpen = false; // Reset chat open state
+});
+
+// Handle logo and username clicks to open sidebar on narrow screens
+document.getElementById("logo").addEventListener("click", handleLogoClick);
+document.getElementById("user-name").addEventListener("click", handleNameTagClick);
+
+// Function to handle logo click
+function handleLogoClick() {
+    if (window.innerWidth <= 768) { // Check if the screen is narrow
+        openSidebar();
     }
 }
 
+// Function to handle name tag click
+function handleNameTagClick() {
+    if (window.innerWidth <= 768) { // Check if the screen is narrow
+        openSidebar();
+    }
+}
